@@ -114,7 +114,12 @@ class Tetris:
         for row in tboard:
             line = ""
             for col in row:
-                line += f"\033[31m█\033[0m"*2 if col != 0 else '█'*2
+                if col == 0:
+                    line += '█'*2
+                elif col == 1:
+                    line += f"\033[31m█\033[0m"*2
+                else:
+                    line += f"\033[32m█\033[0m"*2
             print(line)
 
     def printboardOrg(self, tboard = None):
@@ -229,6 +234,8 @@ class Tetris:
         }
 
     def input(self, action):
+            action_type = ""
+
             if action == 'A':
                 self.piece['pos'][1] -= 1
                 action_type = "move"
