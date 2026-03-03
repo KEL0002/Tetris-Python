@@ -104,6 +104,9 @@ class Tetris:
         self.canHold = True
         self.death_reason = None
 
+        self.lines_cleared = 0
+        self.score = 0
+
 
 
     def printboard(self, tboard = None):
@@ -201,10 +204,17 @@ class Tetris:
             self.death_reason = 'high'
 
     def clearlines(self):
+        lines_cleared_this = 0
         for rowint, row in enumerate(self.board):
             if row == [1]*10:
                 self.board.pop(rowint)
                 self.board.insert(0, [0]*10)
+                self.lines_cleared += 1
+                lines_cleared_this += 1
+        if lines_cleared_this == 1: self.score += 100
+        elif lines_cleared_this == 2: self.score += 300
+        elif lines_cleared_this == 3: self.score += 500
+        elif lines_cleared_this == 4: self.score += 800
 
     def gamestate(self):
         return {
@@ -213,7 +223,9 @@ class Tetris:
             'current': self.piece,
             'next': self.piece_next,
             'held': self.piece_held,
-            'canHold': self.canHold
+            'canHold': self.canHold,
+            'cleared': self.lines_cleared,
+            'score': self.score
         }
 
     def input(self, action):
