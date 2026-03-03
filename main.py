@@ -103,6 +103,8 @@ class Tetris:
         self.piece_held = self.randomPieceType()
         self.canHold = True
 
+        self.printboard(self.tempPutOnBoard())
+
     @staticmethod
     def boom():
         print("""
@@ -238,18 +240,13 @@ class Tetris:
         self.piece_next = self.randomPieceType()
 
     def clearlines(self):
-        for rowint ,row in enumerate(self.board):
+        for rowint, row in enumerate(self.board):
             if row == [1]*10:
                 self.board.pop(rowint)
                 self.board.insert(0, [0]*10)
 
 
-    def start(self):
-        while True:
-            self.printboard(self.tempPutOnBoard())
-            action = input(f"HELD: {self.piece_held} | NEXT: {self.piece_next} -> ").upper()
-            action_type = ""
-
+    def input(self, action):
             if action == 'A':
                 self.piece['pos'][1] -= 1
                 action_type = "move"
@@ -309,7 +306,9 @@ class Tetris:
                     self.nextPiece()
                     self.canHold = True
                     self.clearlines()
+            self.printboard(self.tempPutOnBoard())
 
 
 tetris = Tetris()
-tetris.start()
+while True:
+    tetris.input(input(f"HELD: {tetris.piece_held} | NEXT: {tetris.piece_next} -> ").upper())
