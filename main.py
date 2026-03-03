@@ -102,47 +102,7 @@ class Tetris:
         self.piece_next = self.randomPieceType()
         self.piece_held = self.randomPieceType()
         self.canHold = True
-
-        self.printboard(self.tempPutOnBoard())
-
-    @staticmethod
-    def boom():
-        print("""
-                                     .               
-                                 .               
-                                 .       :       
-                                 :      .        
-                        :..   :  : :  .          
-                           ..  ; :: .            
-                              ... .. :..         
-                             ::: :...            
-                         ::.:.:...;; .....       
-                      :..     .;.. :;     ..     
-                            . :. .  ;.           
-                             .: ;;: ;.           
-                            :; .BRRRV;           
-                               YB BMMMBR         
-                              ;BVIMMMMMt         
-                        .=YRBBBMMMMMMMB          
-                      =RMMMMMMMMMMMMMM;          
-                    ;BMMR=VMMMMMMMMMMMV.         
-                   tMMR::VMMMMMMMMMMMMMB:        
-                  tMMt ;BMMMMMMMMMMMMMMMB.       
-                 ;MMY ;MMMMMMMMMMMMMMMMMMV       
-                 XMB .BMMMMMMMMMMMMMMMMMMM:      
-                 BMI +MMMMMMMMMMMMMMMMMMMMi      
-                .MM= XMMMMMMMMMMMMMMMMMMMMY      
-                 BMt YMMMMMMMMMMMMMMMMMMMMi      
-                 VMB +MMMMMMMMMMMMMMMMMMMM:      
-                 ;MM+ BMMMMMMMMMMMMMMMMMMR       
-                  tMBVBMMMMMMMMMMMMMMMMMB.       
-                   tMMMMMMMMMMMMMMMMMMMB:        
-                    ;BMMMMMMMMMMMMMMMMY          
-                      +BMMMMMMMMMMMBY:           
-                        :+YRBBBRVt; 
-        """)
-        quit()
-
+        self.death_reason = None
 
 
 
@@ -216,7 +176,6 @@ class Tetris:
             for colint, col in enumerate(row):
                 # FÜR JEDEN TEIL DES PIECES
                 if col == 1:
-                    print()
                     if colint + self.piece['pos'][1] < 0: return True
                     if colint + self.piece['pos'][1] > 9: return True
         return False
@@ -238,6 +197,8 @@ class Tetris:
     def nextPiece(self):
         self.piece = self.randomNewPiece(self.piece_next)
         self.piece_next = self.randomPieceType()
+        if self.checkOtherPieceAndFloorCollision():
+            self.death_reason = 'high'
 
     def clearlines(self):
         for rowint, row in enumerate(self.board):
@@ -245,6 +206,15 @@ class Tetris:
                 self.board.pop(rowint)
                 self.board.insert(0, [0]*10)
 
+    def gamestate(self):
+        return {
+            'board': self.board,
+            'fullBoard': self.tempPutOnBoard(),
+            'current': self.piece,
+            'next': self.piece_next,
+            'held': self.piece_held,
+            'canHold': self.canHold
+        }
 
     def input(self, action):
             if action == 'A':
@@ -272,8 +242,8 @@ class Tetris:
                     action_type = "hold"
                     self.canHold = False
                 else:
-                    print("Cannot hold")
-                    self.boom()
+                    self.death_reason = "hold"
+                    return
 
 
             if action == 'S':
@@ -287,28 +257,32 @@ class Tetris:
 
 
             if self.checkWallCollision():
-                print("Collision with wall")
-                self.boom()
+                self.death_reason = "wall"
+                return
 
             if action_type == "move":
                 if self.checkOtherPieceAndFloorCollision():
-                    print("Moved into other block")
-                    self.boom()
+                    self.death_reason = 'move_in_block'
+                    return
             if action_type == "rotate":
                 if self.checkOtherPieceAndFloorCollision():
-                    print("Rotated into other block")
-                    self.boom()
+                    self.death_reason = 'rotate_in_block'
+                    return
 
             if action_type == "down":
                 if self.checkOtherPieceAndFloorCollision():
                     self.piece['pos'][0] -= 1
                     self.putOnBoard()
+
+                    self.clearlines()
                     self.nextPiece()
                     self.canHold = True
-                    self.clearlines()
-            self.printboard(self.tempPutOnBoard())
 
 
 tetris = Tetris()
-while True:
+
+while tetris.death_reason is None:
+    tetris.printboard(tetris.tempPutOnBoard())
     tetris.input(input(f"HELD: {tetris.piece_held} | NEXT: {tetris.piece_next} -> ").upper())
+
+print(f'Game finished. Death Reason: {tetris.death_reason}')
