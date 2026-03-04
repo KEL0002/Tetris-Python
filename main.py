@@ -21,7 +21,11 @@ def determineFitness(genomes, lconfig):
 
         genome_fitness = 0
 
-        #...
+        for move in range(200):
+            output = network.activate(gameInput)
+            #if output >= 7:
+
+            tetris.input(output)
 
 
 
