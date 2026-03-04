@@ -1,52 +1,36 @@
 import neat
+from Tetris import Tetris
 
-import visualize
-
-# XOR test cases: input -> expected output
-xor_inputs = [(0.0, 0.0), (0.0, 1.0), (1.0, 0.0), (1.0, 1.0)]
-xor_outputs = [(0.0,),    (1.0,),    (1.0,),    (0.0,)]
-
-def eval_genomes(genomes, config):
-    """Fitness function: evaluates how well each genome solves XOR."""
+def determineFitness(genomes, lconfig):
     for genome_id, genome in genomes:
-        # Create a neural network from this genome
-        net = neat.nn.FeedForwardNetwork.create(genome, config)
+        network = neat.nn.FeedForwardNetwork.create(genome, lconfig)
 
-        # Start with perfect fitness, subtract error
-        genome.fitness = 4.0
 
-        # Test on all 4 XOR cases
-        for xi, xo in zip(xor_inputs, xor_outputs):
-            output = net.activate(xi)
-            genome.fitness -= (output[0] - xo[0]) ** 2
+        # Netzwerk testen
 
-# Load configuration
+        tetris = Tetris()
+
+        gameInput = (
+            float(tetris.gamestate()['fullBoard']),
+            float(tetris.gamestate()['current']['type']),
+            float(tetris.gamestate()['next']),
+            float(tetris.gamestate()['held']),
+            float(tetris.gamestate()['canHold']),
+            float(tetris.gamestate()['score']),
+        )
+
+        genome_fitness = 0
+
+        #...
+
+
+
+
 config = neat.Config(neat.DefaultGenome, neat.DefaultReproduction,
                      neat.DefaultSpeciesSet, neat.DefaultStagnation,
                      'config')
 
-# Create population
-p = neat.Population(config)
-p.add_reporter(neat.StdOutReporter(True))
+population = neat.Population(config)
+population.add_reporter(neat.StdOutReporter(True))
 
-# Run evolution for up to 300 generations
-winner = p.run(eval_genomes, 300)
-
-# Test the winner
-print('\nBest genome:\n{!s}'.format(winner))
-
-node_names = {
-    -1: 'Input A',
-    -2: 'Input B',
-     0: 'Output'
-}
-
-
-visualize.draw_net(
-    config,
-    winner,
-    view=True,
-    node_names = node_names,
-    filename = "ai",
-    fmt = 'png'
-)
+winner = population.run(determineFitness, 300)

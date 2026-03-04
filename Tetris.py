@@ -298,10 +298,3 @@ class Tetris:
                     self.canHold = True
 
 
-tetris = Tetris()
-
-while tetris.death_reason is None:
-    tetris.printboard(tetris.tempPutOnBoard())
-    tetris.input(input(f"HELD: {tetris.piece_held} | NEXT: {tetris.piece_next} -> ").upper())
-
-print(f'Game finished. Death Reason: {tetris.death_reason}')
