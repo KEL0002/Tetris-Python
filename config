@@ -1,14 +1,14 @@
 [NEAT]
 fitness_criterion     = max
-fitness_threshold     = 3.9
-pop_size              = 500
+fitness_threshold     = 2000000
+pop_size              = 600
 reset_on_extinction   = False
 no_fitness_termination = False
 
 [DefaultGenome]
-activation_default      = softplus
+activation_default      = sigmoid
 activation_mutate_rate  = 0.0
-activation_options      = softplus
+activation_options      = sigmoid
 
 aggregation_default     = sum
 aggregation_mutate_rate = 0.0
@@ -40,9 +40,9 @@ initial_connection      = full_direct
 node_add_prob           = 0.2
 node_delete_prob        = 0.2
 
-num_hidden              = 0
-num_inputs              = 6
-num_outputs             = 1
+num_hidden              = 2
+num_inputs              = 206
+num_outputs             = 7
 
 response_init_mean      = 1.0
 response_init_stdev     = 0.0
@@ -66,7 +66,7 @@ single_structural_mutation = false
 structural_mutation_surer  = default
 
 [DefaultSpeciesSet]
-compatibility_threshold = 3.0
+compatibility_threshold = 2
 
 [DefaultStagnation]
 species_fitness_func = max
