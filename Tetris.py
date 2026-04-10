@@ -168,7 +168,10 @@ class Tetris:
 
         for rowint, row in enumerate(piece_array):
             for colint, col in enumerate(row):
-                if col == 1: tboard[rowint + self.piece['pos'][0]][colint + self.piece['pos'][1]] = 2
+                try:
+                    if col == 1: tboard[rowint + self.piece['pos'][0]][colint + self.piece['pos'][1]] = 2
+                except:
+                    pass
         return tboard
 
     def putOnBoard(self):
@@ -197,14 +200,17 @@ class Tetris:
                     if rowint + self.piece['pos'][0] > 19:
                         return True
                     # WENN POS IM BOARD VON DEM TEIL BELEGT
-                    if self.board[rowint + self.piece['pos'][0]][colint + self.piece['pos'][1]] != 0:
+                    try:
+                        if self.board[rowint + self.piece['pos'][0]][colint + self.piece['pos'][1]] != 0:
+                            return True
+                    except:
                         return True
-
         return False
-
+ 
     def nextPiece(self):
         self.piece = self.randomNewPiece(self.piece_next)
         self.piece_next = self.randomPieceType()
+
         if self.checkOtherPieceAndFloorCollision():
             self.death_reason = 'high'
 
@@ -296,5 +302,3 @@ class Tetris:
                     self.clearlines()
                     self.nextPiece()
                     self.canHold = True
-
-
